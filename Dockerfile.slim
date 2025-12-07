@@ -1,0 +1,29 @@
+ARG STATICJINJAPLUS_VERSION=main
+ARG BASE_IMAGE=python:3.11-slim
+
+FROM ${BASE_IMAGE}
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt /tmp/
+
+RUN pip install --upgrade pip && \
+    pip install -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt
+
+WORKDIR /app
+
+ADD https://github.com/MrDave/StaticJinjaPlus/archive/refs/tags/${STATICJINJAPLUS_VERSION}.tar.gz /tmp/ \
+    || ADD https://github.com/MrDave/StaticJinjaPlus/archive/refs/heads/${STATICJINJAPLUS_VERSION}.tar.gz /tmp/
+
+RUN tar -xzf /tmp/main.tar.gz -C /app/ && \
+    mv /app/StaticJinjaPlus-main /app/StaticJinjaPlus && \
+    rm /tmp/main.tar.gz
+
+WORKDIR /srv/staticjinjaplus
+
+ENTRYPOINT ["python", "/app/StaticJinjaPlus/main.py"]
+
+CMD ["--help"]

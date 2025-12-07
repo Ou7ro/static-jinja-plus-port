@@ -1,0 +1,31 @@
+ARG STATICJINJAPLUS_VERSION=main
+ARG BASE_IMAGE=ubuntu:22.04
+
+FROM ${BASE_IMAGE}
+
+RUN apt-get update && apt-get install -y \
+    python3.11 \
+    python3.11-venv \
+    python3.11-distutils \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.11
+
+COPY requirements.txt /tmp/
+RUN pip install --upgrade pip && \
+    pip install -r /tmp/requirements.txt && \
+    rm /tmp/requirements.txt
+
+WORKDIR /app
+
+ADD https://github.com/MrDave/StaticJinjaPlus/archive/refs/tags/${STATICJINJAPLUS_VERSION}.tar.gz /tmp/ \
+    || ADD https://github.com/MrDave/StaticJinjaPlus/archive/refs/heads/${STATICJINJAPLUS_VERSION}.tar.gz /tmp/
+
+RUN tar -xzf /tmp/main.tar.gz -C /app/ && \
+    mv /app/StaticJinjaPlus-main /app/StaticJinjaPlus && \
+    rm /tmp/main.tar.gz
+
+WORKDIR /srv/staticjinjaplus
+ENTRYPOINT ["python", "/app/StaticJinjaPlus/main.py"]
+CMD ["--help"]
