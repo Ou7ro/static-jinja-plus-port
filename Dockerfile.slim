@@ -18,9 +18,9 @@ WORKDIR /app
 ADD https://github.com/MrDave/StaticJinjaPlus/archive/refs/tags/${STATICJINJAPLUS_VERSION}.tar.gz /tmp/ \
     || ADD https://github.com/MrDave/StaticJinjaPlus/archive/refs/heads/${STATICJINJAPLUS_VERSION}.tar.gz /tmp/
 
-RUN tar -xzf /tmp/main.tar.gz -C /app/ && \
-    mv /app/StaticJinjaPlus-main /app/StaticJinjaPlus && \
-    rm /tmp/main.tar.gz
+RUN tar -xzf /tmp/*.tar.gz -C /app/ && \
+    mv /app/StaticJinjaPlus-* /app/StaticJinjaPlus && \
+    rm /tmp/*.tar.gz
 
 WORKDIR /srv/staticjinjaplus
 
